@@ -2,13 +2,28 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import './App.css'
 import { Login } from './pages/Login/Login'
 import { useAppSelector } from './app/hooks'
-import { selectToken } from './feauters/authSlice'
+import { selectLogged, selectToken } from './feauters/authSlice'
 import { Main } from './pages/Main/Main'
+import AddDeviceModelPage from './pages/addDeviceModel/AddDeviceModelPage'
+import AddProduct from './pages/products/AddProduct'
+import GetProducts from './pages/products/GetProducts'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Main />
+  },
+  {
+    path:'/addDeviceModel',
+    element: <AddDeviceModelPage />
+  },
+  {
+    path:'/addProduct',
+    element: <AddProduct />
+  },
+  {
+    path:'/products',
+    element: <GetProducts />
   }
 ])
 
@@ -21,10 +36,10 @@ const noneAuthRouter = createBrowserRouter([
 
 function App() {
 
-  const accsessToken = useAppSelector(selectToken)
+  const logged = useAppSelector(selectLogged)
 
   return (
-    accsessToken ? <RouterProvider router={router} /> : <RouterProvider router={noneAuthRouter} />
+    logged ? <RouterProvider router={router} /> : <RouterProvider router={noneAuthRouter} />
   )
 }
 

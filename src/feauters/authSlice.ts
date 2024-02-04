@@ -6,6 +6,7 @@ import axios from 'axios'
 
 type AuthState = {
     accessToken: string | null,
+    logged: boolean,
     error?: string | undefined
 }
 
@@ -21,7 +22,8 @@ type TokensData = {
 
 
 const initialState: AuthState = {
-    accessToken: localStorage.getItem('token')
+    accessToken: '',
+    logged: localStorage.getItem('refreshToken') ? true : false
 }
 
 export const authSlice = createSlice({
@@ -34,6 +36,7 @@ export const authSlice = createSlice({
         },
         logOut: (state) => {
             state.accessToken = null
+            state.logged = false
             localStorage.removeItem('refreshToken')
         }
     },
@@ -44,9 +47,11 @@ export const authSlice = createSlice({
             })
             .addCase(authThunk.rejected, (state, action) => {
                 state.error = action.payload
+                state.logged = false
             })
             .addCase(authThunk.fulfilled, (state, action) => {
                 state.error = undefined
+                state.logged = true
                 state.accessToken = action.payload.accessToken
                 localStorage.setItem('refreshToken', action.payload.refreshToken)
             })
@@ -80,6 +85,9 @@ export const authThunk = createAsyncThunk<
 export const { logOut, setTokens } = authSlice.actions
 
 export const selectToken = (state: RootState) => state.auth.accessToken
+export const selectLogged = (state: RootState) => state.auth.logged
 export const selectAuthError = (state: RootState) => state.auth.error
 
 export default authSlice.reducer
+
+

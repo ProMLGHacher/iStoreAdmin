@@ -1,0 +1,36 @@
+.dropdown {
+    position: relative;
+    width: min-content;
+
+    &>img {
+        z-index: 1;
+        position: absolute;
+        right: 20px;
+        top: 0;
+        bottom: 0;
+        transform: translateY(50%);
+    }
+}
+
+.categoryFilter {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 220px;
+
+    font-size: 16px;
+    font-weight: 300;
+    padding: 10px 32px;
+    border-radius: 22px;
+    background: #FFF;
+
+    -moz-appearance: none;
+    /* Firefox */
+    -webkit-appearance: none;
+    /* Safari and Chrome */
+    appearance: none;
+
+    cursor: pointer;
+}

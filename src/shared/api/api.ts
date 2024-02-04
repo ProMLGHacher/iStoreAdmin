@@ -3,7 +3,7 @@ import { RootState, store } from "../../app/store";
 import { logOut, setTokens } from "../../feauters/authSlice";
 
 export const $api = axios.create({
-    baseURL: 'http://192.168.0.11:8090/'
+    baseURL: 'http://localhost:8090/'
 })
 
 $api.interceptors.request.use(async (config) => {
@@ -11,7 +11,7 @@ $api.interceptors.request.use(async (config) => {
     const accessToken = state.auth.accessToken;
 
     if (accessToken) {
-        config.headers.Authorization = `${accessToken}`;
+        config.headers.Authorization = `Beraer ${accessToken}`;
     }
 
     return config;
