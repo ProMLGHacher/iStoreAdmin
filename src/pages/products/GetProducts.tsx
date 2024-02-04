@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { $api } from "../../shared/api/api"
 import Select from "../../shared/select/Select"
 import { Product } from "./types"
@@ -23,16 +23,16 @@ const GetProducts = () => {
 
     const [products, setProducts] = useState<Product[]>([])
 
-    const update = async () => {
+    const update = useCallback(async () => {
         $api.get('/api/products?deviceModel=' + selectedCategory)
             .then((data) => {
                 setProducts(data.data)
             })
-    }
+    }, [selectedCategory])
 
     useEffect(() => {
         update()
-    }, [selectedCategory])
+    }, [update])
 
 
     return (

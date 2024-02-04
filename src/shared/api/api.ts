@@ -3,7 +3,7 @@ import { RootState, store } from "../../app/store";
 import { logOut, setTokens } from "../../feauters/authSlice";
 
 export const $api = axios.create({
-    baseURL: 'http://localhost:8090/'
+    baseURL: 'https://3086-79-126-114-127.ngrok-free.app/'
 })
 
 $api.interceptors.request.use(async (config) => {

@@ -1,9 +1,11 @@
 
+import { GetColorName } from 'hex-color-to-color-name';
 import { Product } from '../../pages/products/types';
 import { $api } from '../../shared/api/api';
 import { useContainerDimensions } from '../../shared/api/hooks/useContainerDimentions';
 import styles from './Product.module.scss'
 import { useEffect, useRef, useState } from 'react';
+import { revalidateProducts } from '../../shared/api/revalidate';
 
 const ProductView = (
     {
@@ -13,7 +15,7 @@ const ProductView = (
     }
 ) => {
 
-    const update = () => { 
+    const update = () => {
         window.location.reload()
     }
 
@@ -69,8 +71,6 @@ const ProductView = (
 
     useEffect(() => {
         setPrice(selectedConfig?.productConf.totalPrice)
-        console.log(selectedConfig);
-
     }, [selectedConfig])
 
     useEffect(() => {
@@ -110,13 +110,12 @@ const ProductView = (
                             return prv
                         })
 
-                        console.log(priceNum);
-
-
-
-                        await $api.patch('/api/product-configuration', {
+                        $api.patch('/api/product-configuration', {
                             "configurationId": prodid,
                             "price": priceNum
+                        })
+                        .then(e => {
+                            e.status == 200 && revalidateProducts()
                         })
                     }
                 })
@@ -149,6 +148,9 @@ const ProductView = (
             "name": newName,
             "description": newDesc
         })
+        .then(e => {
+            e.status == 200 && revalidateProducts()
+        })
     }
 
     const [files, setFiles] = useState<File[]>([])
@@ -159,7 +161,7 @@ const ProductView = (
         setFiles([...e.target.files])
     }
 
-    const [color, setColor] = useState('#000000')
+    const [color, setColor] = useState('#FFFFFF')
     const [colorName, setColorName] = useState('Белый')
 
 
@@ -171,21 +173,22 @@ const ProductView = (
         files.forEach(e => {
             data.append("formFiles", e)
         })
-        
+
         $api.post('/api/upload/productIcon', data).then(e => {
             if (e.status == 200) {
                 update()
                 setFiles([])
+                revalidateProducts()
             }
         })
     }
 
+    const [newFilterName, setnewFilterName] = useState("")
+    const [newFilterValues, setnewFilterValues] = useState<string[]>([""])
+
 
     return (
         <div className={styles.wrapper}>
-            <button onClick={() => {
-                update()
-            }}>iuhuosdihfpuo</button>
             <div style={{
                 display: 'flex',
                 flexDirection: "column",
@@ -194,7 +197,7 @@ const ProductView = (
             }}>
                 <div className={styles.carousel}>
                     <button onClick={() => {
-                        if (Boolean(!imgList.length)) return
+                        if (!imgList.length) return
                         if (carousel == 0) {
                             setCarousel(imgList.length - 1)
                             return
@@ -212,6 +215,7 @@ const ProductView = (
                                 Boolean(files?.length) && <div>
                                     <input value={color} onChange={(e) => {
                                         setColor(e.target.value)
+                                        setColorName(GetColorName(e.target.value))
                                         console.log(color);
                                     }} type="color" />
                                     <input value={colorName} onChange={(e) => {
@@ -224,19 +228,20 @@ const ProductView = (
                                 e.preventDefault()
                                 const data = new FormData()
                                 data.append("productId", product.productId)
-                                data.append("filename", imgList[carousel].split('/')[imgList[carousel].split('/').length-1])
+                                data.append("filename", imgList[carousel].split('/')[imgList[carousel].split('/').length - 1])
                                 $api.delete(`/api/upload/productIcon`, {
                                     data: data,
                                     headers: {
-                                        "Content-Type" : 'multipart/form-data'
+                                        "Content-Type": 'multipart/form-data'
                                     }
-                                })  
+                                })
                                     .then(e => {
                                         if (e.status == 204) {
                                             update()
+                                            revalidateProducts()
                                         }
                                     })
-                            }}>c</button>
+                            }}><img src='/exit.svg' /></button>
                         </form>
                         <div className={styles.images} style={{
                             // +20 потому что gap
@@ -254,7 +259,7 @@ const ProductView = (
                     </div>
                     <button onClick={() => {
                         if (!images.current) return
-                        if (Boolean(!imgList.length)) return
+                        if (!imgList.length) return
                         if (carousel == imgList.length - 1) {
                             setCarousel(0)
                             return
@@ -269,7 +274,11 @@ const ProductView = (
                 </div>
             </div>
             <div className={styles.main}>
-                <form onSubmit={(e) => {
+                <form style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }} onSubmit={(e) => {
                     e.preventDefault()
                     updateProduct()
                 }}>
@@ -278,6 +287,15 @@ const ProductView = (
                     }} className={styles.name} defaultValue={product.name} onChange={(e) => {
                         setNewName(e.target.value)
                     }} />
+                    <button type='button' onClick={() => {
+                        $api.delete('/api/product?productId=' + product.productId)
+                            .then(e => {
+                                if (e.status == 204) {
+                                    update()
+                                    revalidateProducts()
+                                }
+                            })
+                    }}><img src="/exit.svg" alt="" /></button>
                 </form>
                 <form onSubmit={(e) => {
                     e.preventDefault()
@@ -304,7 +322,22 @@ const ProductView = (
                         productState.filters.map((filter, filterIndex) => {
                             return filter.type == "Text" ?
                                 <div key={filter.name}>
-                                    <p>{filter.name}</p>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px'
+                                    }}>
+                                        <p>{filter.name}</p>
+                                        <button onClick={() => {
+                                            $api.delete('/api/characteristic?characteristicId=' + filter.id)
+                                                .then(e => {
+                                                    if (e.status == 204) {
+                                                        update()
+                                                        revalidateProducts()
+                                                    }
+                                                })
+                                        }}><img src="/exit.svg" alt="" /></button>
+                                    </div>
                                     <div className={styles.filters}>
                                         {
                                             filter.elems.map((elem, elemIndex) => {
@@ -343,15 +376,61 @@ const ProductView = (
                         })
                     }
                 </div>
+                <form className={styles.addNew} onSubmit={(e) => {
+                    e.preventDefault()
+                    $api.post('/api/characteristic?productId=' + product.productId, {
+                        "name": newFilterName,
+                        "values": newFilterValues
+                    })
+                        .then((e) => {
+                            if (e.status == 200) {
+                                update()
+                                revalidateProducts()
+                            }
+                        })
+                }}>
+                    <input required type="text" value={newFilterName} onChange={e => {
+                        setnewFilterName(e.target.value)
+                    }} placeholder='Название фильтра' />
+                    {
+                        newFilterValues.map((el, index) => {
+                            return <div>
+                                <input required type="text" value={newFilterValues[index]} onChange={(e) => {
+                                    setnewFilterValues(prev => {
+                                        const newState = [...prev]
+                                        newState[index] = e.target.value
+                                        return newState
+                                    })
+                                }} placeholder='Фильтр' />
+                                <button onClick={() => {
+                                    setnewFilterValues(prev => {
+                                        const newState = [...prev]
+                                        newState.splice(index, 1)
+                                        return newState
+                                    })
+                                }}><img src="/exit.svg" alt="" /></button>
+                            </div>
+                        })
+                    }
+                    <button type='button' onClick={() => {
+                        setnewFilterValues(prev => {
+                            return [...prev, ""]
+                        })
+                    }}>add</button>
+                    <button type='submit'>create</button>
+                </form>
                 <div className={styles.price}>
-                    <form onSubmit={(e) => {
+                    <form onInvalid={(e) => {
                         e.preventDefault()
-                        selectedConfig?.setPrice(price!!, selectedConfig.productConf.configurationId)
+                        selectedConfig?.setPrice(price!, selectedConfig.productConf.configurationId)
+                    }} onSubmit={(e) => {
+                        e.preventDefault()
+                        selectedConfig?.setPrice(price!, selectedConfig.productConf.configurationId)
                     }}>
                         <input type="number" value={price} onChange={(e) => {
-                            setPrice(+e.target.value)
+                            setPrice(parseFloat(e.target.value))
                         }} onBlur={(e) => {
-                            selectedConfig?.setPrice(price!!, selectedConfig.productConf.configurationId)
+                            selectedConfig?.setPrice(price!, selectedConfig.productConf.configurationId)
                         }} /><p>₽</p>
                     </form>
                 </div>

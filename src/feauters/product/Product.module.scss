@@ -93,6 +93,15 @@
     flex-wrap: wrap;
     gap: 20px;
 
+    &>form {
+        display: flex;
+        align-items: center;
+
+        &>input {
+            width: 80px;
+        }
+    }
+
     &>p {
         font-size: 20px;
         font-weight: 600;
@@ -359,4 +368,11 @@
 .inputfile:focus + label,
 .inputfile + label:hover {
     background-color: transparent;
+}
+
+.addNew {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
 }

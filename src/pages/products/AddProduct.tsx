@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import Select from "../../shared/select/Select"
 import { $api } from "../../shared/api/api"
+import { revalidateProducts } from "../../shared/api/revalidate"
 
 const AddProduct = () => {
 
@@ -23,6 +24,14 @@ const AddProduct = () => {
             "name": name,
             "description": description,
             "modelName": modelName
+        })
+        .then(e => {
+            if (e.status == 204) {
+                revalidateProducts()
+            }
+            if (e.status == 200) {
+                revalidateProducts()
+            }
         })
     }
 

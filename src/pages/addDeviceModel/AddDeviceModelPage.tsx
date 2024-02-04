@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { $api } from "../../shared/api/api"
 import Select from "../../shared/select/Select"
+import { revalidateFilters } from "../../shared/api/revalidate"
 
 const AddDeviceModelPage = () => {
 
@@ -30,21 +31,23 @@ const AddDeviceModelPage = () => {
 
     useEffect(() => {
         getFilters()
-    }, [selectedCategory])
+    }, [getFilters, selectedCategory])
 
 
     const send = () => {
         $api.post<string[]>(`/api/deviceModel`, {
             "name": newFilter,
             "productCategoryName": selectedCategory
-        }).then((data) => {
+        }).then((_) => {
             getFilters()
+            revalidateFilters()
         })
     }
 
     const remove = (el: string) => {
-        $api.delete<string[]>(`/api/deviceModel?deviceModel=${el}`).then((data) => {
+        $api.delete<string[]>(`/api/deviceModel?deviceModel=${el}`).then((_) => {
             getFilters()
+            revalidateFilters()
         })
     }
 
