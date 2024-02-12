@@ -3,6 +3,7 @@ import { $api } from "../../shared/api/api"
 import Select from "../../shared/select/Select"
 import { Product } from "./types"
 import ProductView from "../../feauters/product/Product"
+import Header from "../../shared/header/Header"
 
 const GetProducts = () => {
 
@@ -36,23 +37,38 @@ const GetProducts = () => {
 
 
     return (
-        <div>
-            {
-                Boolean(categories.length) && <Select onChange={(value) => {
-                    setSelectedCategory(value)
-                }} values={categories.map(el => {
-                    return {
-                        value: el.name,
-                        name: el.name
+        <>
+            <Header />
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '20px  '
+            }}>
+                {
+                    Boolean(categories.length) && <Select onChange={(value) => {
+                        setSelectedCategory(value)
+                    }} values={categories.map(el => {
+                        return {
+                            value: el.name,
+                            name: el.name
+                        }
+                    })} />
+                }
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '20px',
+                    width: '100%'
+                }}>
+                    {
+                        products.map((el) => {
+                            return <ProductView key={el.productId} product={el} />
+                        })
                     }
-                })} />
-            }
-            {
-                products.map((el) => {
-                    return <ProductView key={el.productId} product={el} />
-                })
-            }
-        </div>
+                </div>
+            </div>
+        </>
     )
 }
 

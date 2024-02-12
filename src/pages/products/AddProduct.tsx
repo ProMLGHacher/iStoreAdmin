@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import Select from "../../shared/select/Select"
 import { $api } from "../../shared/api/api"
 import { revalidateProducts } from "../../shared/api/revalidate"
+import Header from "../../shared/header/Header"
 
 const AddProduct = () => {
 
@@ -25,36 +26,51 @@ const AddProduct = () => {
             "description": description,
             "modelName": modelName
         })
-        .then(e => {
-            if (e.status == 204) {
-                revalidateProducts()
-            }
-            if (e.status == 200) {
-                revalidateProducts()
-            }
-        })
+            .then(e => {
+                if (e.status == 204) {
+                    revalidateProducts()
+                }
+                if (e.status == 200) {
+                    revalidateProducts()
+                }
+            })
     }
 
     return (
-        <div>
-            <input value={name} onChange={(e) => {
-                setName(e.target.value)
-            }} type="text" />
-            <input value={description} onChange={(e) => {
-                setDescription(e.target.value)
-            }} type="text" />
-            {
-                filters && <Select onChange={(value) => {
-                    setModelName(value)
-                }} values={filters.map(el => {
-                    return {
-                        value: el,
-                        name: el
-                    }
-                })} />
-            }
-            <button onClick={create}>create</button>
-        </div>
+        <>
+            <Header />
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '90dvh',
+                gap: '16px',
+                maxWidth: '300px',
+                marginInline: 'auto'
+            }}>
+                <h1>Создать Продукт</h1>
+                <input className="input" value={name} placeholder="Название продукта" onChange={(e) => {
+                    setName(e.target.value)
+                }} type="text" />
+                <textarea className="input" style={{
+
+                }} placeholder="Описание продукта" value={description} onChange={(e) => {
+                    setDescription(e.target.value)
+                }} />
+                {
+                    filters && <Select onChange={(value) => {
+                        setModelName(value)
+                    }} values={filters.map(el => {
+                        return {
+                            value: el,
+                            name: el
+                        }
+                    })} />
+                }
+                <button className="button" onClick={create}>Создать</button>
+            </div>
+        </>
     )
 }
 

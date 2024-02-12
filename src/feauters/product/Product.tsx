@@ -114,9 +114,9 @@ const ProductView = (
                             "configurationId": prodid,
                             "price": priceNum
                         })
-                        .then(e => {
-                            e.status == 200 && revalidateProducts()
-                        })
+                            .then(e => {
+                                e.status == 200 && revalidateProducts()
+                            })
                     }
                 })
                 return
@@ -148,9 +148,9 @@ const ProductView = (
             "name": newName,
             "description": newDesc
         })
-        .then(e => {
-            e.status == 200 && revalidateProducts()
-        })
+            .then(e => {
+                e.status == 200 && revalidateProducts()
+            })
     }
 
     const [files, setFiles] = useState<File[]>([])
@@ -216,15 +216,22 @@ const ProductView = (
                                     <input value={color} onChange={(e) => {
                                         setColor(e.target.value)
                                         setColorName(GetColorName(e.target.value))
-                                        console.log(color);
                                     }} type="color" />
-                                    <input value={colorName} onChange={(e) => {
+                                    <input className='input' value={colorName} onChange={(e) => {
                                         setColorName(e.target.value)
                                         console.log(colorName);
                                     }} type="text" />
+                                    <button className='button' type='submit'>Сохранить</button>
                                 </div>
                             }
-                            <button type='button' onClick={(e) => {
+
+                            <button style={{
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                                height: '15px',
+                                width: '15px',
+                                cursor: 'pointer'
+                            }} onClick={(e) => {
                                 e.preventDefault()
                                 const data = new FormData()
                                 data.append("productId", product.productId)
@@ -241,7 +248,10 @@ const ProductView = (
                                             revalidateProducts()
                                         }
                                     })
-                            }}><img src='/exit.svg' /></button>
+                            }}> <img style={{
+                                height: '15px',
+                                width: '15px'
+                            }} src="exit.svg" alt="" /> </button>
                         </form>
                         <div className={styles.images} style={{
                             // +20 потому что gap
@@ -282,12 +292,20 @@ const ProductView = (
                     e.preventDefault()
                     updateProduct()
                 }}>
-                    <input onBlur={(_) => {
+                    <input style={{
+                        maxWidth: '600px'
+                    }} onBlur={(_) => {
                         updateProduct()
-                    }} className={styles.name} defaultValue={product.name} onChange={(e) => {
+                    }} className={`${styles.name} input`} defaultValue={product.name} onChange={(e) => {
                         setNewName(e.target.value)
                     }} />
-                    <button type='button' onClick={() => {
+                    <button style={{
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        height: '15px',
+                        width: '15px',
+                        cursor: 'pointer',
+                    }} onClick={() => {
                         $api.delete('/api/product?productId=' + product.productId)
                             .then(e => {
                                 if (e.status == 204) {
@@ -295,7 +313,10 @@ const ProductView = (
                                     revalidateProducts()
                                 }
                             })
-                    }}><img src="/exit.svg" alt="" /></button>
+                    }}> <img style={{
+                        height: '15px',
+                        width: '15px'
+                    }} src="exit.svg" alt="" /> </button>
                 </form>
                 <form onSubmit={(e) => {
                     e.preventDefault()
@@ -315,7 +336,10 @@ const ProductView = (
                         onBlur={() => {
                             updateProduct()
                         }}
-                        className={styles.desc} />
+                        style={{
+                            maxWidth: '600px'
+                        }}
+                        className={`${styles.desc} input`} />
                 </form>
                 <div className={styles.configuraion}>
                     {
@@ -325,10 +349,17 @@ const ProductView = (
                                     <div style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '10px'
+                                        gap: '10px',
+                                        marginBottom: '10px'
                                     }}>
                                         <p>{filter.name}</p>
-                                        <button onClick={() => {
+                                        <button style={{
+                                            backgroundColor: 'transparent',
+                                            border: 'none',
+                                            height: '15px',
+                                            width: '15px',
+                                            cursor: 'pointer'
+                                        }} onClick={() => {
                                             $api.delete('/api/characteristic?characteristicId=' + filter.id)
                                                 .then(e => {
                                                     if (e.status == 204) {
@@ -336,7 +367,10 @@ const ProductView = (
                                                         revalidateProducts()
                                                     }
                                                 })
-                                        }}><img src="/exit.svg" alt="" /></button>
+                                        }}> <img style={{
+                                            height: '15px',
+                                            width: '15px'
+                                        }} src="exit.svg" alt="" /> </button>
                                     </div>
                                     <div className={styles.filters}>
                                         {
@@ -389,35 +423,66 @@ const ProductView = (
                             }
                         })
                 }}>
-                    <input required type="text" value={newFilterName} onChange={e => {
+                    <input className='input' required type="text" value={newFilterName} onChange={e => {
                         setnewFilterName(e.target.value)
                     }} placeholder='Название фильтра' />
-                    {
-                        newFilterValues.map((el, index) => {
-                            return <div>
-                                <input required type="text" value={newFilterValues[index]} onChange={(e) => {
-                                    setnewFilterValues(prev => {
-                                        const newState = [...prev]
-                                        newState[index] = e.target.value
-                                        return newState
-                                    })
-                                }} placeholder='Фильтр' />
-                                <button onClick={() => {
-                                    setnewFilterValues(prev => {
-                                        const newState = [...prev]
-                                        newState.splice(index, 1)
-                                        return newState
-                                    })
-                                }}><img src="/exit.svg" alt="" /></button>
-                            </div>
-                        })
-                    }
-                    <button type='button' onClick={() => {
-                        setnewFilterValues(prev => {
-                            return [...prev, ""]
-                        })
-                    }}>add</button>
-                    <button type='submit'>create</button>
+                    <div style={{
+                        display: 'flex',
+                        gap: '20px'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            gap: '10px',
+                            flexDirection: 'column'
+                        }}>
+                        {
+                            newFilterValues.map((el, index) => {
+                                return <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px'
+                                }}>
+                                    <input required className='input' type="text" value={newFilterValues[index]} onChange={(e) => {
+                                        setnewFilterValues(prev => {
+                                            const newState = [...prev]
+                                            newState[index] = e.target.value
+                                            return newState
+                                        })
+                                    }} placeholder='Фильтр' />
+                                    <button style={{
+                                        backgroundColor: 'transparent',
+                                        border: 'none',
+                                        height: '15px',
+                                        width: '15px',
+                                        cursor: 'pointer'
+                                    }} onClick={() => {
+                                        setnewFilterValues(prev => {
+                                            const newState = [...prev]
+                                            newState.splice(index, 1)
+                                            return newState
+                                        })
+                                    }}> <img style={{
+                                        height: '15px',
+                                        width: '15px'
+                                    }} src="exit.svg" alt="" /> </button>
+                                </div>
+                            })
+                        }
+                        </div>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '200px',
+                            gap: '10px'
+                        }}>
+                            <button className='button' type='button' onClick={() => {
+                                setnewFilterValues(prev => {
+                                    return [...prev, ""]
+                                })
+                            }}>Добавить фильтр</button>
+                            <button className='button' type='submit'>Создать</button>
+                        </div>
+                    </div>
                 </form>
                 <div className={styles.price}>
                     <form onInvalid={(e) => {
@@ -427,11 +492,16 @@ const ProductView = (
                         e.preventDefault()
                         selectedConfig?.setPrice(price!, selectedConfig.productConf.configurationId)
                     }}>
-                        <input type="number" value={price} onChange={(e) => {
+                        <input style={{
+                            width: '150px'
+                        }} className='input' type="number" value={price} onChange={(e) => {
                             setPrice(parseFloat(e.target.value))
                         }} onBlur={(e) => {
                             selectedConfig?.setPrice(price!, selectedConfig.productConf.configurationId)
-                        }} /><p>₽</p>
+                        }} /><p style={{
+                            fontSize: '20px',
+                            marginLeft: '8px'
+                        }}>₽</p>
                     </form>
                 </div>
             </div>

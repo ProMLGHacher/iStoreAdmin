@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom'
 import './App.css'
 import { Login } from './pages/Login/Login'
 import { useAppSelector } from './app/hooks'
@@ -7,6 +7,8 @@ import { Main } from './pages/Main/Main'
 import AddDeviceModelPage from './pages/addDeviceModel/AddDeviceModelPage'
 import AddProduct from './pages/products/AddProduct'
 import GetProducts from './pages/products/GetProducts'
+import { Promocode } from './pages/promo/Promocode'
+import Blog from './pages/blog/Blog'
 
 const router = createBrowserRouter([
   {
@@ -24,6 +26,14 @@ const router = createBrowserRouter([
   {
     path:'/products',
     element: <GetProducts />
+  },
+  {
+    path:'/promo',
+    element: <Promocode />
+  },
+  {
+    path:'/blog',
+    element: <Blog />
   }
 ])
 
@@ -31,6 +41,26 @@ const noneAuthRouter = createBrowserRouter([
   {
     path: '/',
     element: <Login />
+  },
+  {
+    path:'/addDeviceModel',
+    element: <Navigate to={'/'} />
+  },
+  {
+    path:'/addProduct',
+    element: <Navigate to={'/'} />
+  },
+  {
+    path:'/products',
+    element: <Navigate to={'/'} />
+  },
+  {
+    path:'/promo',
+    element: <Navigate to={'/'} />
+  },
+  {
+    path:'/blog',
+    element: <Navigate to={'/'} />
   }
 ])
 

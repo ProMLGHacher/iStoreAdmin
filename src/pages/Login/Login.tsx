@@ -1,4 +1,5 @@
 import { useState } from "react"
+import styles from './Login.module.scss'
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { authThunk, selectAuthError } from "../../feauters/authSlice"
 
@@ -21,15 +22,16 @@ export const Login = () => {
   }
 
   return (
-    <div>
+    <div className={styles.wrapper}>
+      <img src="/logo.png" alt="" />
       <form onSubmit={submit}>
-        <input value={mail} onChange={(e) => {
+        <input className={`input`} placeholder="Почта" value={mail} onChange={(e) => {
           setMail(e.target.value)
         }} type="text" />
-        <input value={password} onChange={(e) => {
+        <input className={`input`} placeholder="Пароль" value={password} onChange={(e) => {
           setPassword(e.target.value)
         }} type="password" />
-        <button type="submit">Войти</button>
+        <button className="button" type="submit">Войти</button>
         {
           error
         }
