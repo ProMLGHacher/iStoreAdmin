@@ -465,7 +465,9 @@ const ProductView = (
                             }
                         })
                 }}>
-                    <input className='input' required type="text" value={newFilterName} onChange={e => {
+                    <input className='input' style={{
+                        maxWidth: '300px'
+                    }} required type="text" value={newFilterName} onChange={e => {
                         setnewFilterName(e.target.value)
                     }} placeholder='Название фильтра' />
                     <div style={{
@@ -497,7 +499,8 @@ const ProductView = (
                                         height: '15px',
                                         width: '15px',
                                         cursor: 'pointer'
-                                    }} onClick={() => {
+                                    }} type='button' onClick={(e) => {
+                                        e.preventDefault()
                                         setnewFilterValues(prev => {
                                             const newState = [...prev]
                                             newState.splice(index, 1)
