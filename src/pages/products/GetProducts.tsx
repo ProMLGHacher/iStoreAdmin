@@ -4,36 +4,48 @@ import Select from "../../shared/select/Select"
 import { Product } from "./types"
 import ProductView from "../../feauters/product/Product"
 import Header from "../../shared/header/Header"
+import { useNavigate, useParams } from "react-router-dom"
 
 const GetProducts = () => {
+
+    const { filter } = useParams()
 
     const [categories, setCategories] = useState<{
         name: string
     }[]>([])
     const [selectedCategory, setSelectedCategory] = useState<string>()
 
-    useEffect(() => {
-        $api.get<{
-            name: string
-        }[]>("/api/productCategories").then((data) => {
-            setCategories(data.data)
-            setSelectedCategory(data.data[0].name)
-        })
-    }, [])
-
-
+    const navigate = useNavigate()
     const [products, setProducts] = useState<Product[]>([])
 
-    const update = useCallback(async () => {
-        $api.get('/api/products?deviceModel=' + selectedCategory)
+    useEffect(() => {
+        if (!filter) {
+            navigate('/')
+            return
+        }
+        const get = async () => {
+            await $api.get<{
+                name: string
+            }[]>("/api/productCategories").then((data) => {
+                if (!data.data.map(e => e.name).includes(filter)) {
+                    navigate('/')
+                }
+                setCategories(data.data)
+                setSelectedCategory(filter)
+            })
+        }
+        get()
+    }, [filter])
+
+    useEffect(() => {
+        if (selectedCategory) $api.get('/api/products?deviceModel=' + selectedCategory)
             .then((data) => {
                 setProducts(data.data)
             })
     }, [selectedCategory])
 
-    useEffect(() => {
-        update()
-    }, [update])
+
+
 
 
     return (
@@ -46,8 +58,8 @@ const GetProducts = () => {
                 gap: '20px  '
             }}>
                 {
-                    Boolean(categories.length) && <Select onChange={(value) => {
-                        setSelectedCategory(value)
+                    Boolean(categories.length) && <Select value={selectedCategory} onChange={(value) => {
+                        navigate('/products/' + value)
                     }} values={categories.map(el => {
                         return {
                             value: el.name,
@@ -63,7 +75,12 @@ const GetProducts = () => {
                 }}>
                     {
                         products.map((el) => {
-                            return <ProductView key={el.productId} product={el} />
+                            return <ProductView update={() => {
+                                if (selectedCategory) $api.get('/api/products?deviceModel=' + selectedCategory)
+                                    .then((data) => {
+                                        setProducts(data.data)
+                                    })
+                            }} key={el.productId} product={el} />
                         })
                     }
                 </div>

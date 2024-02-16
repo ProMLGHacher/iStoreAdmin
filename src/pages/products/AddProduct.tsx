@@ -27,11 +27,11 @@ const AddProduct = () => {
             "modelName": modelName
         })
             .then(e => {
-                if (e.status == 204) {
+                if (e.status < 299) {
                     revalidateProducts()
-                }
-                if (e.status == 200) {
-                    revalidateProducts()
+                    setName('')
+                    setDescription('')
+                    alert('Успешно')
                 }
             })
     }

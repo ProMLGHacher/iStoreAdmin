@@ -9,14 +9,18 @@ import { revalidateProducts } from '../../shared/api/revalidate';
 
 const ProductView = (
     {
-        product
+        product,
+        update
     }: {
-        product: Product
+        product: Product,
+        update?: () => void
     }
 ) => {
 
-    const update = () => {
-        window.location.reload()
+    const updateData = () => {
+        if (update) {
+            update()
+        }
     }
 
     const [productState, setproductState] = useState(() => {
@@ -26,6 +30,44 @@ const ProductView = (
         })
         return product
     })
+
+    useEffect(() => {
+        console.log('ХУЙХУЙХУЙХУЙХУЙХУЙХУЙХУЙХ');
+        
+        product.filters = product.filters.map(el => {
+            el.selected = 0
+            return el
+        })
+        setproductState(product)
+
+        for (let index = 0; index < productState.productConfigurations.length; index++) {
+            const productConf = productState.productConfigurations[index];
+            const res = []
+            for (let charind = 0; charind < productConf.characteristics.length; charind++) {
+                const char = productConf.characteristics[charind];
+                for (let filterIndex = 0; filterIndex < productState.filters.length; filterIndex++) {
+                    const filter = productState.filters[filterIndex];
+                    const selected = filter.elems[filter.selected]
+
+                    if (filter.type != char.type) continue
+                    if (filter.name != char.name) continue
+                    if (filter.type == 'Color') {
+                        if (selected.color != char.value) continue
+                    }
+                    if (filter.type == 'Text') {
+                        if (selected.values[0] != char.value) continue
+                    }
+                    res.push(true)
+                }
+            }
+            if (res.length == productConf.characteristics.length) {
+                setSelectedConfig({
+                    productConf,
+                    setPrice: (price: number, prodid: string) => { }
+                })
+            }
+        }
+    }, [product])
 
 
 
@@ -176,7 +218,7 @@ const ProductView = (
 
         $api.post('/api/upload/productIcon', data).then(e => {
             if (e.status == 200) {
-                update()
+                updateData()
                 setFiles([])
                 revalidateProducts()
             }
@@ -244,14 +286,14 @@ const ProductView = (
                                 })
                                     .then(e => {
                                         if (e.status == 204) {
-                                            update()
+                                            updateData()
                                             revalidateProducts()
                                         }
                                     })
                             }}> <img style={{
                                 height: '15px',
                                 width: '15px'
-                            }} src="exit.svg" alt="" /> </button>
+                            }} src="/exit.svg" alt="" /> </button>
                         </form>
                         <div className={styles.images} style={{
                             // +20 потому что gap
@@ -299,7 +341,7 @@ const ProductView = (
                     }} className={`${styles.name} input`} defaultValue={product.name} onChange={(e) => {
                         setNewName(e.target.value)
                     }} />
-                    <button style={{
+                    <button type='button' style={{
                         backgroundColor: 'transparent',
                         border: 'none',
                         height: '15px',
@@ -309,14 +351,14 @@ const ProductView = (
                         $api.delete('/api/product?productId=' + product.productId)
                             .then(e => {
                                 if (e.status == 204) {
-                                    update()
+                                    updateData()
                                     revalidateProducts()
                                 }
                             })
                     }}> <img style={{
                         height: '15px',
                         width: '15px'
-                    }} src="exit.svg" alt="" /> </button>
+                    }} src="/exit.svg" alt="" /> </button>
                 </form>
                 <form onSubmit={(e) => {
                     e.preventDefault()
@@ -363,14 +405,14 @@ const ProductView = (
                                             $api.delete('/api/characteristic?characteristicId=' + filter.id)
                                                 .then(e => {
                                                     if (e.status == 204) {
-                                                        update()
+                                                        updateData()
                                                         revalidateProducts()
                                                     }
                                                 })
                                         }}> <img style={{
                                             height: '15px',
                                             width: '15px'
-                                        }} src="exit.svg" alt="" /> </button>
+                                        }} src="/exit.svg" alt="" /> </button>
                                     </div>
                                     <div className={styles.filters}>
                                         {
@@ -418,7 +460,7 @@ const ProductView = (
                     })
                         .then((e) => {
                             if (e.status == 200) {
-                                update()
+                                updateData()
                                 revalidateProducts()
                             }
                         })
@@ -464,7 +506,7 @@ const ProductView = (
                                     }}> <img style={{
                                         height: '15px',
                                         width: '15px'
-                                    }} src="exit.svg" alt="" /> </button>
+                                    }} src="/exit.svg" alt="" /> </button>
                                 </div>
                             })
                         }
@@ -494,9 +536,21 @@ const ProductView = (
                     }}>
                         <input style={{
                             width: '150px'
-                        }} className='input' type="number" value={price} onChange={(e) => {
+                        }} className='input' type="number" value={price} pattern='[0-9]*[,]?[0-9]+' onChange={(e) => {
+                            // console.log(e.currentTarget.value);
+                            
                             setPrice(parseFloat(e.target.value))
-                        }} onBlur={(e) => {
+                        }}
+                        onKeyDown={(event) => {
+                            const keyCode = event.which || event.keyCode;
+
+                            if (keyCode === 190) {
+                                event.preventDefault();
+                            }
+                            
+                            // setPrice(parseFloat(e.target.value))
+                        }}
+                        onBlur={(e) => {
                             selectedConfig?.setPrice(price!, selectedConfig.productConf.configurationId)
                         }} /><p style={{
                             fontSize: '20px',

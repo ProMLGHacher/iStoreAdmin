@@ -19,9 +19,10 @@ export const Main = () => {
             }}>
                 <Link className="button" to={'/addDeviceModel'}>Добавить фильтры</Link>
                 <Link className="button" to={'/addProduct'}>Добавить продукт</Link>
-                <Link className="button" to={'/products'}>Все продукты</Link>
+                <Link className="button" to={'/products/Iphone'}>Все продукты</Link>
                 <Link className="button" to={'/promo'}>Промокоды</Link>
                 <Link className="button" to={'/blog'}>Блог</Link>
+                <Link className="button" to={'/stats'}>Статистика</Link>
             </header>
             <button style={{
                 border: 'none',

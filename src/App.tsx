@@ -9,6 +9,7 @@ import AddProduct from './pages/products/AddProduct'
 import GetProducts from './pages/products/GetProducts'
 import { Promocode } from './pages/promo/Promocode'
 import Blog from './pages/blog/Blog'
+import Stats from './pages/stats/Stats'
 
 const router = createBrowserRouter([
   {
@@ -25,7 +26,11 @@ const router = createBrowserRouter([
   },
   {
     path:'/products',
-    element: <GetProducts />
+    element: <GetProducts />,
+  },
+  {
+    path:'/products/:filter',
+    element: <GetProducts />,
   },
   {
     path:'/promo',
@@ -34,6 +39,10 @@ const router = createBrowserRouter([
   {
     path:'/blog',
     element: <Blog />
+  },
+  {
+    path:'/stats',
+    element: <Stats />
   }
 ])
 

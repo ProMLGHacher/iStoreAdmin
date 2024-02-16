@@ -5,7 +5,8 @@ type SelectProps<T = string> = {
         value: T,
         name: string
     }[],
-    onChange: (value: T) => void
+    onChange: (value: T) => void,
+    value?: T
 }
 
 const Select = (props: SelectProps) => {
@@ -13,7 +14,7 @@ const Select = (props: SelectProps) => {
     return (
         <div className={styles.dropdown}>
             <img src={'/dropdown-icon.svg'} alt='стрелка на право (фильтры категории)' width={20} height={20} />
-            <select title='filter' onChange={(e) => {
+            <select value={props.value} title='filter' onChange={(e) => {
                 props.onChange(e.target.value)
             }} defaultValue={props.values[0].value} className={styles.categoryFilter}>
                 {

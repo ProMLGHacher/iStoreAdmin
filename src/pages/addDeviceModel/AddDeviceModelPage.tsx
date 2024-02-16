@@ -42,6 +42,7 @@ const AddDeviceModelPage = () => {
         }).then((_) => {
             getFilters()
             revalidateFilters()
+            alert('Успешно')
         })
     }
 
