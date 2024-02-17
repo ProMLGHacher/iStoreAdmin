@@ -5,6 +5,7 @@ import Header from '../../shared/header/Header'
 const Stats = () => {
 
   const [stats, setStats] = useState<{
+    'countOrders': number,
     "averageSum": number,
     "countPurchasedGoods": number,
     "minCostProduct": number,
@@ -37,7 +38,7 @@ const Stats = () => {
         width: '90%',
         marginTop: '40px'
       }}>
-        <Stat text={`Всего заказов: ${stats?.averageSum}`} />
+        {stats?.countOrders && <Stat text={`Всего заказов: ${stats?.countOrders}`} />}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
@@ -45,9 +46,9 @@ const Stats = () => {
           alignItems: 'center',
           marginTop: '20px'
         }}>
-          <Stat text={`Максимальная стоимость: ${stats?.maxCostProduct} Руб`} />
-          <Stat text={`Средний чек: ${stats?.averageSum} Руб`} />
-          <Stat text={`Минимальная стоимость: ${stats?.minCostProduct} Руб`} />
+          {stats?.maxCostProduct && <Stat text={`Максимальная стоимость: ${stats?.maxCostProduct} Руб`} />}
+          {stats?.averageSum && <Stat text={`Средний чек: ${stats?.averageSum} Руб`} />}
+          {stats?.minCostProduct && <Stat text={`Минимальная стоимость: ${stats?.minCostProduct} Руб`} />}
         </div>
       </div>
 
